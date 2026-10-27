@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en" data-afif="classic">
 <head>
 <meta charset="utf-8">
@@ -27,21 +27,21 @@
       </div>
       <h2>Drop a disk image here</h2>
       <p>Raspberry Pi OS, Ubuntu, DietPi, Home Assistant and other SD-card / USB images (<b>.img</b>).</p>
-      <button class="btn primary" id="pick">Choose image…</button>
+      <button class="btn primary" id="pick">Choose imageâ€¦</button>
     </div>
 
     <div id="imgCard" class="card hidden">
       <div class="ih">
         <div class="ficon">IMG</div>
-        <div class="fname"><b id="fName">—</b><small id="fPath">—</small></div>
+        <div class="fname"><b id="fName">â€”</b><small id="fPath">â€”</small></div>
         <button class="btn ghost sm" id="change">Change</button>
       </div>
       <div class="pbar-wrap"><div id="pbar" class="pbar"></div><div class="pbar-legend" id="pLegend"></div></div>
       <div class="stats">
-        <div class="stat"><small>Image size</small><b id="sSize">—</b></div>
-        <div class="stat"><small>Data in use</small><b id="sUsed">—</b></div>
-        <div class="stat accent"><small>Expected after shrinking</small><b id="sEst">—</b></div>
-        <div class="stat gold"><small>Expected saving</small><b id="sSave">—</b></div>
+        <div class="stat"><small>Image size</small><b id="sSize">â€”</b></div>
+        <div class="stat"><small>Data in use</small><b id="sUsed">â€”</b></div>
+        <div class="stat accent"><small>Expected after shrinking</small><b id="sEst">â€”</b></div>
+        <div class="stat gold"><small>Expected saving</small><b id="sSave">â€”</b></div>
       </div>
       <table class="parts" id="parts"></table>
       <p class="warn hidden" id="problem"></p>
@@ -56,7 +56,7 @@
         <button data-v="copy" class="on">Save as a new file</button>
         <button data-v="inplace">Shrink the original</button>
       </div>
-      <div class="outrow" id="outRow"><input id="outPath" spellcheck="false"><button class="btn sm" id="outPick">Browse…</button></div>
+      <div class="outrow" id="outRow"><input id="outPath" spellcheck="false"><button class="btn sm" id="outPick">Browseâ€¦</button></div>
       <p class="hint" id="outHint">The original image is not changed.</p>
       <label class="sw"><input type="checkbox" id="optExpand" checked><i></i><span><b>Auto-expand on first boot</b><small>The root partition grows to fill the SD card the first time the device starts.</small></span></label>
       <label class="sw"><input type="checkbox" id="optRepair" checked><i></i><span><b>Repair the filesystem if needed</b><small>Runs a full e2fsck repair when the quick check finds problems.</small></span></label>
@@ -73,7 +73,7 @@
       <div class="gauge-wrap">
         <svg viewBox="0 0 200 200" class="gauge"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--k-accent)"/><stop offset="1" stop-color="var(--k-gold)"/></linearGradient></defs>
           <circle cx="100" cy="100" r="84" class="g-bg"/><circle cx="100" cy="100" r="84" class="g-fg" id="gFg"/></svg>
-        <div class="g-txt"><b id="gPct">0%</b><small id="gStep">Starting…</small></div>
+        <div class="g-txt"><b id="gPct">0%</b><small id="gStep">Startingâ€¦</small></div>
       </div>
       <ol class="steps" id="steps"></ol>
       <div class="sub"><div class="subbar"><i id="subBar"></i></div><small id="subTxt"></small></div>
@@ -81,15 +81,15 @@
     </div>
 
     <div class="card done hidden" id="done">
-      <div class="trophy">✓</div>
+      <div class="trophy">âœ“</div>
       <h3 id="dTitle">Image shrunk</h3>
       <div class="cmp-bars">
-        <div class="cb"><small>Before</small><div class="cbar"><i id="bBefore"></i></div><b id="vBefore">—</b></div>
-        <div class="cb"><small>After</small><div class="cbar"><i id="bAfter" class="after"></i></div><b id="vAfter">—</b></div>
+        <div class="cb"><small>Before</small><div class="cbar"><i id="bBefore"></i></div><b id="vBefore">â€”</b></div>
+        <div class="cb"><small>After</small><div class="cbar"><i id="bAfter" class="after"></i></div><b id="vAfter">â€”</b></div>
       </div>
       <p class="saving" id="dSave"></p>
       <p class="hint" id="dFile"></p>
-      <div class="runbtns"><button class="btn primary" id="openFolder">Show in folder</button><button class="btn" id="toCard">Write to SD card…</button><button class="btn" id="again">Shrink another image</button><button class="btn ghost sm" id="logBtn2">Show log</button></div>
+      <div class="runbtns"><button class="btn primary" id="openFolder">Show in folder</button><button class="btn" id="toCard">Write to SD cardâ€¦</button><button class="btn" id="again">Shrink another image</button><button class="btn ghost sm" id="logBtn2">Show log</button></div>
     </div>
   </section>
 </main>
@@ -98,7 +98,7 @@
   <section class="col left">
     <div class="card">
       <h3 class="ch"><span class="num">1</span>Image file</h3>
-      <div class="outrow"><input id="iFile" spellcheck="false" placeholder="Choose an image to write, or where to save a card image…"><button class="btn sm" id="iOpen" title="Choose an image to write">Open…</button><button class="btn sm" id="iSave" title="Choose where to save a card image">Save as…</button></div>
+      <div class="outrow"><input id="iFile" spellcheck="false" placeholder="Choose an image to write, or where to save a card imageâ€¦"><button class="btn sm" id="iOpen" title="Choose an image to write">Openâ€¦</button><button class="btn sm" id="iSave" title="Choose where to save a card image">Save asâ€¦</button></div>
       <p class="hint" id="iInfo">Accepts .img, and Raspberry Pi downloads as .zip, .xz or .gz, written directly without unpacking.</p>
       <div class="hashbox">
         <label class="lbl">Hash</label>
@@ -112,7 +112,7 @@
     <div class="card">
       <h3 class="ch"><span class="num">2</span>Device<span class="sp"></span>
         <label class="chk"><input type="checkbox" id="showAll"> Show all disks</label>
-        <button class="btn ghost sm" id="dRefresh" title="Refresh">⟳ Refresh</button></h3>
+        <button class="btn ghost sm" id="dRefresh" title="Refresh">âŸ³ Refresh</button></h3>
       <div class="warn hidden" id="adminBar"><b>Administrator rights are needed</b> to read or write SD cards and USB drives.<button class="btn primary sm" id="elevate">Restart as administrator</button></div>
       <div id="devList" class="devlist"></div>
       <p class="hint" id="devHint">Your Windows disk is never shown and can never be written.</p>
@@ -125,27 +125,27 @@
       <label class="sw"><input type="checkbox" id="optAlloc"><i></i><span><b>Read only allocated partitions</b><small>When reading a card, stop after the last partition instead of copying the whole card. Much faster and smaller.</small></span></label>
       <label class="sw"><input type="checkbox" id="optVerify" checked><i></i><span><b>Verify after writing</b><small>Reads the card back and compares it with the image, byte by byte.</small></span></label>
       <div class="acts">
-        <button class="act" id="aRead"><span class="ai read"></span><b>Read</b><small>Card → image file</small></button>
-        <button class="act main" id="aWrite"><span class="ai write"></span><b>Write</b><small>Image file → card</small></button>
+        <button class="act" id="aRead"><span class="ai read"></span><b>Read</b><small>Card â†’ image file</small></button>
+        <button class="act main" id="aWrite"><span class="ai write"></span><b>Write</b><small>Image file â†’ card</small></button>
         <button class="act" id="aVerify"><span class="ai verify"></span><b>Verify only</b><small>Compare card and image</small></button>
       </div>
       <p class="hint" id="actHint"></p>
     </div>
 
     <div class="card hidden" id="iRun">
-      <h3 id="rTitle">Writing…</h3>
+      <h3 id="rTitle">Writingâ€¦</h3>
       <p class="hint" id="rSub"></p>
       <div class="bigbar"><i id="rBar"></i><span id="rPct">0%</span></div>
       <div class="rstats">
-        <div><small>Done</small><b id="rDone">—</b></div>
-        <div><small>Speed</small><b id="rSpeed">—</b></div>
-        <div><small>Time left</small><b id="rEta">—</b></div>
+        <div><small>Done</small><b id="rDone">â€”</b></div>
+        <div><small>Speed</small><b id="rSpeed">â€”</b></div>
+        <div><small>Time left</small><b id="rEta">â€”</b></div>
       </div>
       <div class="runbtns"><button class="btn danger sm" id="rCancel">Cancel</button><button class="btn ghost sm" id="rLog">Show log</button></div>
     </div>
 
     <div class="card done hidden" id="iDone">
-      <div class="trophy" id="iTrophy">✓</div>
+      <div class="trophy" id="iTrophy">âœ“</div>
       <h3 id="iTitle">Done</h3>
       <p class="saving" id="iSave2"></p>
       <p class="hint" id="iDetail"></p>
@@ -157,48 +157,69 @@
 <main id="usb" class="hidden">
   <section class="col left">
     <div class="card">
-      <h3 class="ch"><span class="num">1</span>Bootable image</h3>
-      <div class="outrow"><input id="usbFile" readonly placeholder="Choose a .img or .iso image"><button class="btn sm" id="usbPick">Choose…</button></div>
-      <p class="hint" id="usbFileInfo">No image chosen yet.</p>
-      <p class="hint">Raspberry Pi OS, Ubuntu, DietPi, Home Assistant and other Linux or isohybrid images. Windows setup ISOs are not supported in this tab.</p>
+      <div class="sec-h"><h2>Drive Properties</h2><span class="rule"></span></div>
+      <div class="rp-row"><label class="lbl" for="usbDevice">Device</label>
+        <select id="usbDevice" class="rp-sel"><option value="">No USB drive found</option></select></div>
+      <div class="rp-row"><label class="lbl" for="usbFile">Boot selection</label>
+        <div class="rp-inline">
+          <input id="usbFile" class="rp-inp" readonly placeholder="Disk or ISO image (Please select)">
+          <button class="btn ghost sm" id="usbHash" title="Compute SHA-256 of the image">#</button>
+          <button class="btn sm" id="usbPick">SELECT</button>
+        </div></div>
+      <div class="rp-grid">
+        <div><label class="lbl" for="usbPart">Partition scheme</label>
+          <select id="usbPart" class="rp-sel"><option>MBR</option><option selected>GPT</option></select></div>
+        <div><label class="lbl" for="usbTarget">Target system</label>
+          <select id="usbTarget" class="rp-sel"><option>BIOS (or UEFI-CSM)</option><option selected>UEFI (non CSM)</option></select></div>
+      </div>
+      <label class="rp-toggle"><input type="checkbox" id="usbAdvDrive"><span>Show advanced drive properties</span></label>
+      <div class="rp-adv hidden" id="usbAdvDriveBody">
+        <label class="chk"><input type="checkbox" id="usbListHdd"> List USB Hard Drives</label>
+        <label class="chk"><input type="checkbox" id="usbOldBios"> Add fixes for old BIOSes</label>
+      </div>
+      <p class="rp-note">Raspberry Pi OS, Ubuntu, DietPi, Home Assistant and other Linux / isohybrid images are written raw. Windows setup ISOs need file-copy mode and are not supported yet.</p>
     </div>
 
     <div class="card">
-      <h3 class="ch"><span class="num">2</span>USB drive<span class="sp"></span><button class="btn ghost sm" id="usbRefresh" title="Refresh">⟳ Refresh</button></h3>
-      <div class="warn hidden" id="usbAdmin"><b>Administrator rights are needed</b> to write to a USB drive. Restart from the Disk Imager tab, then come back.</div>
-      <div id="usbDevs" class="devlist"></div>
-      <p class="hint">Your Windows system disk is never listed and can never be written.</p>
+      <div class="sec-h"><h2>Format Options</h2><span class="rule"></span></div>
+      <div class="rp-row"><label class="lbl" for="usbLabel">Volume label</label><input id="usbLabel" class="rp-inp" placeholder="Drive label"></div>
+      <div class="rp-grid">
+        <div><label class="lbl" for="usbFs">File system</label>
+          <select id="usbFs" class="rp-sel"><option>FAT32</option><option selected>NTFS</option><option>exFAT</option><option>UDF</option></select></div>
+        <div><label class="lbl" for="usbCluster">Cluster size</label>
+          <select id="usbCluster" class="rp-sel"><option>4096 bytes (Default)</option></select></div>
+      </div>
+      <label class="rp-toggle"><input type="checkbox" id="usbAdvFormat"><span>Show advanced format options</span></label>
+      <div class="rp-adv hidden" id="usbAdvFormatBody">
+        <label class="chk"><input type="checkbox" id="usbQuick" checked> Quick format</label>
+        <label class="chk"><input type="checkbox" id="usbExtLabel" checked> Create extended label and icon files</label>
+        <div class="rp-row"><label class="chk"><input type="checkbox" id="usbBadBlocks"> Check device for bad blocks</label>
+          <select id="usbPasses" class="rp-sel"><option>1 pass</option><option>2 passes</option><option>3 passes</option></select></div>
+        <label class="chk"><input type="checkbox" id="usbValidate"> UEFI media validation</label>
+      </div>
+      <p class="rp-note">These apply to file-copy mode. Raw image writing keeps the filesystem and partition table already inside the image.</p>
     </div>
   </section>
 
   <section class="col right">
     <div class="card">
-      <h3>Create</h3>
-      <label class="sw"><input type="checkbox" id="usbVerify" checked><i></i><span><b>Verify after writing</b><small>Reads the drive back and compares it with the image, byte by byte.</small></span></label>
-      <div class="acts">
-        <button class="act main" id="usbGo"><span class="ai write"></span><b>Create bootable USB</b><small>Image file → USB drive</small></button>
+      <div class="sec-h"><h2>Status</h2><span class="rule"></span></div>
+      <div class="warn hidden" id="usbAdmin"><b>Administrator rights are needed</b> to write to a USB drive. Restart from the Disk Imager tab, then come back.</div>
+      <div class="rp-status" id="usbStatus">READY</div>
+      <p class="hint" id="usbStat"></p>
+      <div class="bigbar hidden" id="usbBarWrap"><i id="usbBar"></i><span id="usbPct">0%</span></div>
+      <div class="rp-actions">
+        <button class="btn ghost" id="usbClose">CLOSE</button>
+        <button class="btn primary" id="usbGo" disabled>START</button>
       </div>
-      <p class="hint">Everything on the drive is erased. Close Explorer windows showing it first; Windows may then ask to format it — click <b>Cancel</b>.</p>
-    </div>
-
-    <div class="card hidden" id="usbRun">
-      <h3>Working…</h3>
-      <div class="bigbar"><i id="usbBar"></i><span id="usbPct">0%</span></div>
-      <p class="hint" id="usbStat">Starting…</p>
-      <div class="runbtns"><button class="btn danger sm" id="usbCancel">Cancel</button><button class="btn ghost sm" id="usbLog">Show log</button></div>
-    </div>
-
-    <div class="card done hidden" id="usbDone">
-      <div class="trophy">✓</div>
-      <h3>Bootable USB</h3>
-      <p class="saving" id="usbMsg"></p>
-      <div class="runbtns"><button class="btn" id="usbAgain">Write another</button><button class="btn ghost sm" id="usbLog2">Show log</button></div>
+      <p class="rp-foot" id="usbFoot">0 devices found</p>
+      <p class="rp-note">Everything on the drive is erased. Close Explorer windows showing it first; Windows may then ask to format it - click <b>Cancel</b>.</p>
     </div>
   </section>
 </main>
 
 <section id="log" class="hidden"><header><b>Log</b><span class="sp"></span><button class="btn ghost sm" id="logCopy">Copy</button><button class="btn ghost sm" id="logClose">Close</button></header><pre id="logPre"></pre></section>
-<footer id="foot"><span>© AFIF-TECH · Afif Khoury · ImgShrink &amp; Disk Imager</span><span class="sp"></span><span id="footR">Filesystem tools: e2fsprogs (GPL-2.0) · xz (0BSD)</span></footer>
+<footer id="foot"><span>Â© AFIF-TECH Â· Afif Khoury Â· ImgShrink &amp; Disk Imager</span><span class="sp"></span><span id="footR">Filesystem tools: e2fsprogs (GPL-2.0) Â· xz (0BSD)</span></footer>
 <div id="dropShade"><div>Drop the image to load it</div></div>
 <div id="toast"></div>
 <script src="imager.js"></script>

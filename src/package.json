@@ -1,7 +1,7 @@
-﻿{
+{
   "name": "afif-imgshrink",
   "productName": "AFIF ImgShrink",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "AFIF ImgShrink - shrink Raspberry Pi / Linux images, read, write and verify SD cards, and create bootable USB drives",
   "author": "Afif Khoury (AFIF-TECH)",
   "license": "GPL-2.0-only",

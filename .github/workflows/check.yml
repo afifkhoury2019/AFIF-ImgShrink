@@ -30,29 +30,39 @@ jobs:
           }
           if ($fail -gt 0) { exit 1 }
 
-      - name: Verify AS USB tab is embedded
+      - name: AS USB tab matches the Rufus control set
         shell: pwsh
         run: |
-          $checks = @(
-            @{ file = 'src/ui/index.html'; pattern = 'data-tab="usb"' },
-            @{ file = 'src/ui/index.html'; pattern = 'id="usb"' },
-            @{ file = 'src/ui/index.html'; pattern = 'src="usb.js"' },
-            @{ file = 'src/ui/imager.js';  pattern = 'A\.usbEnter' },
-            @{ file = 'src/ui/usb.js';     pattern = 'diskStart\("write"' }
+          $ids = @(
+            'usbDevice', 'usbFile', 'usbPick', 'usbHash', 'usbPart', 'usbTarget',
+            'usbAdvDrive', 'usbLabel', 'usbFs', 'usbCluster', 'usbAdvFormat',
+            'usbQuick', 'usbExtLabel', 'usbBadBlocks', 'usbPasses', 'usbValidate',
+            'usbStatus', 'usbGo', 'usbClose', 'usbFoot'
           )
-          foreach ($c in $checks) {
-            if (-not (Select-String -Path $c.file -Pattern $c.pattern -Quiet)) {
-              Write-Error "missing $($c.pattern) in $($c.file)"
-              exit 1
-            }
-            Write-Host "ok: $($c.pattern) in $($c.file)"
+          $html = Get-Content 'src/ui/index.html' -Raw
+          $missing = @()
+          foreach ($id in $ids) {
+            if ($html -notmatch ('id="' + $id + '"')) { $missing += $id }
           }
-
-      - name: Assert no external USB writer is bundled
-        shell: pwsh
-        run: |
-          if (Select-String -Path 'src/preload.js','src/main.js' -Pattern 'launch-usb' -Quiet) {
-            Write-Error 'launch-usb should be gone: the tab must not start an external program'
+          if ($missing.Count -gt 0) {
+            Write-Error ('missing controls: ' + ($missing -join ', '))
             exit 1
           }
-          Write-Host 'ok: no external writer launch path'
+          Write-Host ('ok: ' + $ids.Count + ' controls present')
+          if ($html -notmatch 'data-tab="usb"') { Write-Error 'missing usb tab button'; exit 1 }
+          if ($html -notmatch 'src="usb.js"') { Write-Error 'usb.js not loaded'; exit 1 }
+
+      - name: Tab is embedded, not a launcher
+        shell: pwsh
+        run: |
+          foreach ($f in @('src/preload.js','src/main.js','src/ui/app.js')) {
+            if (Select-String -Path $f -Pattern 'launch-usb|launchUsb' -Quiet) {
+              Write-Error "$f must not start an external program"
+              exit 1
+            }
+          }
+          if (-not (Select-String -Path 'src/ui/usb.js' -Pattern 'diskStart' -Quiet)) {
+            Write-Error 'usb.js must write through the shared disk engine'
+            exit 1
+          }
+          Write-Host 'ok: embedded writer only'

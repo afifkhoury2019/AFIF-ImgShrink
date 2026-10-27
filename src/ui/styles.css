@@ -209,3 +209,25 @@ body.dragging #dropShade{display:grid}
 .rstats small{display:block;color:var(--k-soft);font-size:11.5px}.rstats b{font-size:17px;font-variant-numeric:tabular-nums}
 .trophy.bad{background:linear-gradient(135deg,var(--k-red),color-mix(in srgb,var(--k-red) 60%,#000))}
 .modal h3{margin-top:0}.modal .dz{margin:12px 0;padding:12px 14px;border-radius:12px;background:var(--k-warn-bg);color:var(--k-warn);font-weight:600}
+/* AS USB — Rufus-style form layout */
+.sec-h{display:flex;align-items:center;gap:10px;margin:2px 0 14px}
+.sec-h h2{font-size:16.5px;margin:0;font-weight:800;white-space:nowrap}
+.sec-h .rule{flex:1;height:2px;background:var(--k-line2);border-radius:2px}
+.rp-row{display:grid;grid-template-columns:118px 1fr;align-items:center;gap:10px;margin:9px 0}
+.rp-row .lbl{font-size:13px;color:var(--k-soft)}
+.rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:9px 0}
+.rp-grid .lbl{display:block;font-size:13px;color:var(--k-soft);margin-bottom:4px}
+.rp-sel,.rp-inp{width:100%;padding:7px 9px;border-radius:8px;border:1px solid var(--k-line2);background:var(--k-paper);color:var(--k-ink);font:inherit}
+.rp-sel:disabled,.rp-inp:disabled{opacity:.55;cursor:not-allowed}
+.rp-inline{display:flex;gap:6px;align-items:center}
+.rp-inline input{flex:1;min-width:0}
+.rp-toggle{display:flex;align-items:center;gap:8px;margin:14px 0 6px;font-size:13px;font-weight:700;cursor:pointer}
+.rp-adv{margin:2px 0 0;padding:4px 0 2px 2px}
+.rp-adv .chk{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:13px}
+.rp-status{border:2px solid var(--k-line2);border-radius:10px;padding:11px 14px;font-weight:800;letter-spacing:.06em;text-align:center;background:var(--k-head);font-size:13.5px}
+.rp-status.busy{border-color:var(--k-accent);color:var(--k-accent)}
+.rp-status.bad{border-color:var(--k-red);color:var(--k-red)}
+.rp-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.rp-actions .btn{min-width:104px}
+.rp-foot{margin-top:10px;font-size:12px;opacity:.7}
+.rp-note{margin-top:12px;font-size:11.5px;line-height:1.5;opacity:.65}

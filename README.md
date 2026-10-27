@@ -1,4 +1,4 @@
-﻿# AFIF ImgShrink 1.3.0
+﻿# AFIF ImgShrink 1.4.0
 
 Electron desktop app for Windows: shrink Raspberry Pi / Linux disk images, read,
 write and verify SD cards, and create bootable USB drives.
@@ -7,6 +7,31 @@ Everything runs inside one window. There is no separate helper application and n
 third-party USB writer bundled: the **AS USB** tab drives the same `afif-disk`
 engine the Disk Imager tab already uses.
 
+## What changed in 1.4.0
+
+The **AS USB** tab now mirrors Rufus 4.15's main window control-for-control
+(27 controls in the original dialog; 29 elements here including grouped bodies).
+
+| Rufus control | AS USB | State |
+|---|---|---|
+| Device combo | `usbDevice` | live - lists removable drives |
+| Boot selection + SELECT | `usbFile` + `usbPick` | live - picks the image |
+| Hash button | `usbHash` | live - SHA-256 of the image |
+| Partition scheme | `usbPart` | shown, inert in raw mode |
+| Target system | `usbTarget` | shown, inert in raw mode |
+| Show advanced drive properties | `usbAdvDrive` | live - reveals the two toggles |
+| Volume label / File system / Cluster size | `usbLabel`/`usbFs`/`usbCluster` | shown, inert in raw mode |
+| Show advanced format options | `usbAdvFormat` | live - reveals the toggles |
+| Quick format / extended label / bad blocks / passes / UEFI validation | `usbQuick` `usbExtLabel` `usbBadBlocks` `usbPasses` `usbValidate` | shown, inert in raw mode |
+| Status box + READY | `usbStatus` | live - READY / WRITING / VERIFYING / DONE / FAILED |
+| START / CLOSE | `usbGo` / `usbClose` | live |
+| "N device found" | `usbFoot` | live |
+
+"Shown, inert" means the control is present and laid out like Rufus but disabled
+with an explanation: raw image writing keeps the partition table and filesystem
+that are already inside the image, so those settings only apply once file-copy
+mode exists. The tab says so in two notes rather than showing dead controls as
+if they worked.
 ## What changed in 1.3.0
 
 | Change | Detail |
@@ -75,3 +100,4 @@ GUI processes. Test the AS USB tab on a real Windows desktop.
 
 GPL-2.0-only, as the app already declared. Bundles e2fsprogs (GPL-2.0), xz (0BSD)
 and Electron (MIT) - see `src/LICENSES`.
+

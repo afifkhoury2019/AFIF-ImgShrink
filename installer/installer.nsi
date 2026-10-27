@@ -1,4 +1,4 @@
-; AFIF ImgShrink 1.3.0 installer ??? includes AS USB
+; AFIF ImgShrink 1.4.0 installer ??? includes AS USB
 ;
 ; Build:
 ;   makensis /DSRCDIR="C:\path\to\payload" installer.nsi
@@ -11,7 +11,7 @@ Unicode true
 !include "x64.nsh"
 
 !define APPNAME     "AFIF ImgShrink"
-!define APPVERSION  "1.3.0"
+!define APPVERSION  "1.4.0"
 !define PUBLISHER   "AFIF-TECH"
 !define APPEXE      "AFIF ImgShrink.exe"
 
@@ -30,12 +30,12 @@ Unicode true
 Name "${APPNAME}"
 OutFile "${OUTFILE}"
 
-VIProductVersion "1.3.0.0"
+VIProductVersion "1.4.0.0"
 VIAddVersionKey "ProductName"      "${APPNAME}"
 VIAddVersionKey "CompanyName"      "${PUBLISHER}"
-VIAddVersionKey "FileDescription"  "AFIF ImgShrink 1.3.0 Setup with bootable USB"
-VIAddVersionKey "FileVersion"      "1.3.0.0"
-VIAddVersionKey "ProductVersion"   "1.3.0"
+VIAddVersionKey "FileDescription"  "AFIF ImgShrink 1.4.0 Setup with AS USB (Rufus-style interface)"
+VIAddVersionKey "FileVersion"      "1.4.0.0"
+VIAddVersionKey "ProductVersion"   "1.4.0"
 VIAddVersionKey "LegalCopyright"   "AFIF-TECH - Afif Khoury. Includes GPLv3 components."
 
 InstallDir "$PROGRAMFILES64\AFIF ImgShrink"
@@ -94,4 +94,5 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\AFIF-TECH\ImgShrink"
   RMDir /r "$INSTDIR"
 SectionEnd
+
 
