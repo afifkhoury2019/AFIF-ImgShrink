@@ -157,27 +157,42 @@
 <main id="usb" class="hidden">
   <section class="col left">
     <div class="card">
-      <h3 class="ch"><span class="num">1</span>AS USB Writer</h3>
-      <p class="hint">Write an ISO or disk image to a USB stick or SD card to make a bootable drive: Windows setup media, Linux installers, UEFI and ARM images.</p>
-      <p class="hint">AS USB opens as its own window and asks for administrator rights, because it writes directly to the disk.</p>
-      <div class="acts">
-        <button class="act main" id="usbOpen"><span class="ai write"></span><b>Open AS USB Writer</b><small>Launch the bootable USB tool</small></button>
-      </div>
-      <p class="hint" id="usbHint">Tip: shrunk images from the Shrink tab can be written straight to a card from the Disk Imager tab.</p>
+      <h3 class="ch"><span class="num">1</span>Bootable image</h3>
+      <div class="outrow"><input id="usbFile" readonly placeholder="Choose a .img or .iso image"><button class="btn sm" id="usbPick">Choose…</button></div>
+      <p class="hint" id="usbFileInfo">No image chosen yet.</p>
+      <p class="hint">Raspberry Pi OS, Ubuntu, DietPi, Home Assistant and other Linux or isohybrid images. Windows setup ISOs are not supported in this tab.</p>
+    </div>
+
+    <div class="card">
+      <h3 class="ch"><span class="num">2</span>USB drive<span class="sp"></span><button class="btn ghost sm" id="usbRefresh" title="Refresh">⟳ Refresh</button></h3>
+      <div class="warn hidden" id="usbAdmin"><b>Administrator rights are needed</b> to write to a USB drive. Restart from the Disk Imager tab, then come back.</div>
+      <div id="usbDevs" class="devlist"></div>
+      <p class="hint">Your Windows system disk is never listed and can never be written.</p>
     </div>
   </section>
+
   <section class="col right">
     <div class="card">
-      <h3>Features</h3>
-      <ul class="usbfeat">
-        <li>Bootable USB from Windows, Linux, UEFI and ARM images</li>
-        <li>ISO to USB for Windows 10 and 11 setup media</li>
-        <li>Partition scheme MBR or GPT, target system BIOS or UEFI</li>
-        <li>FAT32, NTFS, exFAT and UDF, chosen automatically from the image</li>
-        <li>Bad-block check, checksum verification and persistence support</li>
-        <li>Windows To Go, and downloadable official Windows images</li>
-      </ul>
-      <p class="usbnote">AS USB is part of AFIF ImgShrink. Its writing engine is built on Rufus 4.15 (GPLv3, © Akeo Consulting / Pete Batard) and is shipped unmodified except for its name and icon. Full source is included with the installer.</p>
+      <h3>Create</h3>
+      <label class="sw"><input type="checkbox" id="usbVerify" checked><i></i><span><b>Verify after writing</b><small>Reads the drive back and compares it with the image, byte by byte.</small></span></label>
+      <div class="acts">
+        <button class="act main" id="usbGo"><span class="ai write"></span><b>Create bootable USB</b><small>Image file → USB drive</small></button>
+      </div>
+      <p class="hint">Everything on the drive is erased. Close Explorer windows showing it first; Windows may then ask to format it — click <b>Cancel</b>.</p>
+    </div>
+
+    <div class="card hidden" id="usbRun">
+      <h3>Working…</h3>
+      <div class="bigbar"><i id="usbBar"></i><span id="usbPct">0%</span></div>
+      <p class="hint" id="usbStat">Starting…</p>
+      <div class="runbtns"><button class="btn danger sm" id="usbCancel">Cancel</button><button class="btn ghost sm" id="usbLog">Show log</button></div>
+    </div>
+
+    <div class="card done hidden" id="usbDone">
+      <div class="trophy">✓</div>
+      <h3>Bootable USB</h3>
+      <p class="saving" id="usbMsg"></p>
+      <div class="runbtns"><button class="btn" id="usbAgain">Write another</button><button class="btn ghost sm" id="usbLog2">Show log</button></div>
     </div>
   </section>
 </main>
@@ -187,6 +202,7 @@
 <div id="dropShade"><div>Drop the image to load it</div></div>
 <div id="toast"></div>
 <script src="imager.js"></script>
+<script src="usb.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

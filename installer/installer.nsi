@@ -1,4 +1,4 @@
-; AFIF ImgShrink 1.2.0 installer — includes AS USB
+; AFIF ImgShrink 1.3.0 installer ??? includes AS USB
 ;
 ; Build:
 ;   makensis /DSRCDIR="C:\path\to\payload" installer.nsi
@@ -11,7 +11,7 @@ Unicode true
 !include "x64.nsh"
 
 !define APPNAME     "AFIF ImgShrink"
-!define APPVERSION  "1.2.0"
+!define APPVERSION  "1.3.0"
 !define PUBLISHER   "AFIF-TECH"
 !define APPEXE      "AFIF ImgShrink.exe"
 
@@ -30,12 +30,12 @@ Unicode true
 Name "${APPNAME}"
 OutFile "${OUTFILE}"
 
-VIProductVersion "1.2.0.0"
+VIProductVersion "1.3.0.0"
 VIAddVersionKey "ProductName"      "${APPNAME}"
 VIAddVersionKey "CompanyName"      "${PUBLISHER}"
-VIAddVersionKey "FileDescription"  "AFIF ImgShrink 1.2.0 Setup with AS USB"
-VIAddVersionKey "FileVersion"      "1.2.0.0"
-VIAddVersionKey "ProductVersion"   "1.2.0"
+VIAddVersionKey "FileDescription"  "AFIF ImgShrink 1.3.0 Setup with bootable USB"
+VIAddVersionKey "FileVersion"      "1.3.0.0"
+VIAddVersionKey "ProductVersion"   "1.3.0"
 VIAddVersionKey "LegalCopyright"   "AFIF-TECH - Afif Khoury. Includes GPLv3 components."
 
 InstallDir "$PROGRAMFILES64\AFIF ImgShrink"
@@ -51,7 +51,7 @@ UninstallIcon "${ICONFILE}"
 !define MUI_ICON "${ICONFILE}"
 !define MUI_UNICON "${ICONFILE}"
 !define MUI_WELCOMEPAGE_TITLE "AFIF ImgShrink ${APPVERSION}"
-!define MUI_WELCOMEPAGE_TEXT "This will install AFIF ImgShrink: shrink Raspberry Pi and Linux images, read and write SD cards, and create bootable USB drives with AS USB.$\r$\n$\r$\nClick Next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This will install AFIF ImgShrink: shrink Raspberry Pi and Linux images, read and write SD cards, and create bootable USB drives with bootable USB.$\r$\n$\r$\nClick Next to continue."
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
@@ -94,3 +94,4 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\AFIF-TECH\ImgShrink"
   RMDir /r "$INSTDIR"
 SectionEnd
+

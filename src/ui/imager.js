@@ -17,6 +17,7 @@
     st.tab = t; document.body.dataset.tab = t;
     $$("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
     $("#main").classList.toggle("hidden", t !== "shrink"); $("#imager").classList.toggle("hidden", t !== "imager"); $("#usb").classList.toggle("hidden", t !== "usb");
+    if (t === "usb") A.usbEnter?.();
     $("#dropShade div").textContent = t === "imager" ? "Drop the image file here" : "Drop the image to load it";
     clearInterval(st.poll);
     if (t === "imager") { refresh(); st.poll = setInterval(() => !st.running && refresh(true), 3000); }

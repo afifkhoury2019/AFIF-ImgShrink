@@ -1,4 +1,4 @@
-name: Source check
+﻿name: Source check
 
 on:
   push:
@@ -20,26 +20,25 @@ jobs:
         shell: pwsh
         run: |
           $files = @(
-            'src/main.js', 'src/preload.js', 'src/disk.js',
-            'src/engine.js', 'src/ui/app.js', 'src/ui/imager.js'
+            'src/main.js', 'src/preload.js', 'src/disk.js', 'src/engine.js',
+            'src/ui/app.js', 'src/ui/imager.js', 'src/ui/usb.js'
           )
           $fail = 0
           foreach ($f in $files) {
             node --check $f
-            if ($LASTEXITCODE -ne 0) { Write-Host "FAILED: $f"; $fail++ }
-            else { Write-Host "ok: $f" }
+            if ($LASTEXITCODE -ne 0) { Write-Host "FAILED: $f"; $fail++ } else { Write-Host "ok: $f" }
           }
           if ($fail -gt 0) { exit 1 }
 
-      - name: Verify AS USB integration points
+      - name: Verify AS USB tab is embedded
         shell: pwsh
         run: |
           $checks = @(
             @{ file = 'src/ui/index.html'; pattern = 'data-tab="usb"' },
             @{ file = 'src/ui/index.html'; pattern = 'id="usb"' },
-            @{ file = 'src/preload.js';    pattern = 'launch-usb' },
-            @{ file = 'src/main.js';       pattern = 'launch-usb' },
-            @{ file = 'src/ui/imager.js';  pattern = '\$\("#usb"\)' }
+            @{ file = 'src/ui/index.html'; pattern = 'src="usb.js"' },
+            @{ file = 'src/ui/imager.js';  pattern = 'A\.usbEnter' },
+            @{ file = 'src/ui/usb.js';     pattern = 'diskStart\("write"' }
           )
           foreach ($c in $checks) {
             if (-not (Select-String -Path $c.file -Pattern $c.pattern -Quiet)) {
@@ -48,3 +47,12 @@ jobs:
             }
             Write-Host "ok: $($c.pattern) in $($c.file)"
           }
+
+      - name: Assert no external USB writer is bundled
+        shell: pwsh
+        run: |
+          if (Select-String -Path 'src/preload.js','src/main.js' -Pattern 'launch-usb' -Quiet) {
+            Write-Error 'launch-usb should be gone: the tab must not start an external program'
+            exit 1
+          }
+          Write-Host 'ok: no external writer launch path'

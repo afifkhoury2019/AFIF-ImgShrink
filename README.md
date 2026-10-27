@@ -1,76 +1,77 @@
-# AFIF ImgShrink 1.2.0 — with AS USB
+﻿# AFIF ImgShrink 1.3.0
 
-Electron desktop app for Windows that shrinks Raspberry Pi / Linux disk images,
-reads and writes SD cards, and (new in 1.2.0) creates bootable USB drives.
+Electron desktop app for Windows: shrink Raspberry Pi / Linux disk images, read,
+write and verify SD cards, and create bootable USB drives.
 
-The bootable-USB feature is **AS USB**, a tab inside the app that launches the
-bundled `AS-USB.exe` writing engine. That engine is a build of **Rufus 4.15**
-(GPLv3) renamed and re-iconed only — see [licenses/AS-USB-NOTICE.txt](licenses/AS-USB-NOTICE.txt).
+Everything runs inside one window. There is no separate helper application and no
+third-party USB writer bundled: the **AS USB** tab drives the same `afif-disk`
+engine the Disk Imager tab already uses.
 
-## What's in 1.2.0
+## What changed in 1.3.0
 
 | Change | Detail |
 |---|---|
-| New tab | **AS USB** in the top tab bar, next to Shrink image and Disk Imager |
-| New IPC channel | `launch-usb` in `src/main.js`, exposed as `launchUsb()` in `src/preload.js` |
-| New payload | `resources/bin/AS-USB.exe` (the Rufus-based engine) |
-| New UI | `#usb` section + `.ti.usb` icon in `src/ui/index.html` and `src/ui/styles.css` |
+| AS USB tab is now native | Own UI in the app window: choose image, choose drive, write, verify, progress, log |
+| Removed | The bundled `AS-USB.exe` (Rufus-based) and its launch IPC channel |
+| Removed | Rufus/GPLv3 notices for that component - no Rufus code ships any more |
+| Kept | Shrink image, Disk Imager, hashing and compression from 1.2.0 |
 
-Behaviour: the button starts `AS-USB.exe` with `Start-Process -Verb RunAs`,
-because the engine declares `requireAdministrator`. If AFIF ImgShrink is already
-elevated there is no prompt; otherwise Windows shows one UAC prompt.
+The tab is self-contained: `src/ui/usb.js` (new), a `#usb` section in
+`src/ui/index.html`, and one hook in `src/ui/imager.js` (`A.usbEnter`) that
+refreshes the drive list when the tab opens. Writing goes through the existing
+`disk-start` IPC with `{ disk, file, verify }` - the same path the Disk Imager
+uses for its Write action.
+
+## Supported in the AS USB tab
+
+- Raspberry Pi OS, Ubuntu, DietPi, Home Assistant and other Linux images
+- Any `.img`, and `.iso` files that are isohybrid (the common Linux case)
+- Optional read-back verification after writing
+
+**Not supported yet:** Windows setup ISOs (`.iso` from Microsoft). Those need
+file-level extraction into a FAT32/NTFS partition plus boot-sector handling,
+which is a separate piece of work - the tab says so rather than producing a USB
+that silently fails to boot.
 
 ## Layout
 
 ```
-src/                 the Electron app (what goes into resources/app)
+src/                 Electron app (goes to resources/app)
   main.js            main process, window, IPC
   preload.js         contextBridge surface
-  disk.js            disk read/write/verify
-  engine.js          image shrink engine (wraps e2fsprogs)
-  ui/                index.html, app.js, imager.js, styles.css, theme.css
-  build/icon.png     window/app icon
-  LICENSES/          third-party licences and the e2fsprogs patch set
+  disk.js            disk read/write/verify via afif-disk
+  engine.js          image shrink engine (e2fsprogs)
+  ui/index.html      three tabs
+  ui/imager.js       tab switcher + Disk Imager
+  ui/usb.js          AS USB tab
 installer/
-  installer.nsi      NSIS 3.11 installer, including AS USB
+  installer.nsi      NSIS 3.11 installer
   app.ico            installer icon
-licenses/
-  AS-USB-NOTICE.txt  AS USB attribution and GPLv3 obligations
-  LICENSE-RUFUS.txt  GPLv3 full text
 ```
 
-## Building the installer
+## Building
 
-The installer needs the Electron runtime payload (Chromium DLLs, `.pak` files,
-`locales/`, and `AFIF ImgShrink.exe`). That payload is not committed here — it is
-extracted from the published 1.1.0 installer with 7-Zip:
+The installer needs the Electron runtime payload, extracted from the published
+1.1.0 installer (not committed here):
 
 ```powershell
 7za x AFIF-ImgShrink-Setup-1.1.0.exe -o payload
-# replace resources/app.asar with the unpacked source in src/
 Remove-Item payload\resources\app.asar
 Copy-Item src payload\resources\app -Recurse
-# add the USB engine
-Copy-Item AS-USB.exe payload\resources\bin\AS-USB.exe
-# build
 makensis /DSRCDIR="payload" installer\installer.nsi
 ```
 
-Output: `AFIF-ImgShrink-Setup-1.2.0.exe`.
+## Verification
 
-## Verification performed
+- `node --check` passes on all seven JS files
+- CI asserts the tab exists: `data-tab="usb"`, `id="usb"`, `usb.js` script tag,
+  `A.usbEnter` hook
+- Installer built with NSIS 3.11, exit 0
 
-- `node --check` passes on all six JS files (`main.js`, `preload.js`, `disk.js`,
-  `engine.js`, `ui/app.js`, `ui/imager.js`).
-- Installer built with NSIS 3.11 (LZMA solid), 80.9 MB, exit code 0.
-- Payload assembled by hashing: `resources/app/*` and `resources/bin/AS-USB.exe`
-  were copied from the verified sources and compared by SHA-256.
-
-Not verified: a GUI install and click-through, because the build environment
-cannot launch GUI processes. Test the AS USB button on a real Windows desktop.
+Not verified: a GUI click-through, because the build environment cannot launch
+GUI processes. Test the AS USB tab on a real Windows desktop.
 
 ## Licensing
 
-The app declares `GPL-2.0-only`; it bundles e2fsprogs (GPL-2.0), xz (0BSD),
-Electron (MIT) and, as of 1.2.0, AS USB (GPLv3). Publishing this source is what
-keeps the distribution compliant. Keep `notices` with any binary you ship.
+GPL-2.0-only, as the app already declared. Bundles e2fsprogs (GPL-2.0), xz (0BSD)
+and Electron (MIT) - see `src/LICENSES`.
