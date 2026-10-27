@@ -1,0 +1,50 @@
+name: Source check
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax check JavaScript
+        shell: pwsh
+        run: |
+          $files = @(
+            'src/main.js', 'src/preload.js', 'src/disk.js',
+            'src/engine.js', 'src/ui/app.js', 'src/ui/imager.js'
+          )
+          $fail = 0
+          foreach ($f in $files) {
+            node --check $f
+            if ($LASTEXITCODE -ne 0) { Write-Host "FAILED: $f"; $fail++ }
+            else { Write-Host "ok: $f" }
+          }
+          if ($fail -gt 0) { exit 1 }
+
+      - name: Verify AS USB integration points
+        shell: pwsh
+        run: |
+          $checks = @(
+            @{ file = 'src/ui/index.html'; pattern = 'data-tab="usb"' },
+            @{ file = 'src/ui/index.html'; pattern = 'id="usb"' },
+            @{ file = 'src/preload.js';    pattern = 'launch-usb' },
+            @{ file = 'src/main.js';       pattern = 'launch-usb' },
+            @{ file = 'src/ui/imager.js';  pattern = '\$\("#usb"\)' }
+          )
+          foreach ($c in $checks) {
+            if (-not (Select-String -Path $c.file -Pattern $c.pattern -Quiet)) {
+              Write-Error "missing $($c.pattern) in $($c.file)"
+              exit 1
+            }
+            Write-Host "ok: $($c.pattern) in $($c.file)"
+          }

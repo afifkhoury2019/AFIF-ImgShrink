@@ -1,0 +1,90 @@
+diff --git a/e2fsck/journal.c b/e2fsck/journal.c
+index 19d68b4..6ca4509 100644
+--- a/e2fsck/journal.c
++++ b/e2fsck/journal.c
+@@ -1710,9 +1710,9 @@ errcode_t e2fsck_run_ext3_journal(e2fsck_t ctx)
+ 
+ 	ext2fs_mmp_stop(ctx->fs);
+ 	ext2fs_free(ctx->fs);
+-	retval = ext2fs_open(ctx->filesystem_name, ctx->openfs_flags,
+-			     ctx->superblock, blocksize, io_ptr,
+-			     &ctx->fs);
++	retval = ext2fs_open2(ctx->filesystem_name, ctx->io_options,
++			      ctx->openfs_flags, ctx->superblock, blocksize,
++			      io_ptr, &ctx->fs);
+ 	if (retval) {
+ 		com_err(ctx->program_name, retval,
+ 			_("while trying to re-open %s"),
+diff --git a/e2fsck/unix.c b/e2fsck/unix.c
+index de20b21..824f335 100644
+--- a/e2fsck/unix.c
++++ b/e2fsck/unix.c
+@@ -619,7 +619,11 @@ static void reserve_stdio_fds(void)
+ 	int	fd = 0;
+ 
+ 	while (fd <= 2) {
++#ifdef _WIN32
++		fd = open("NUL", O_RDWR);
++#else
+ 		fd = open("/dev/null", O_RDWR);
++#endif
+ 		if (fd < 0) {
+ 			fprintf(stderr, _("ERROR: Couldn't open "
+ 				"/dev/null (%s)\n"),
+diff --git a/lib/ext2fs/getsize.c b/lib/ext2fs/getsize.c
+index a028634..a3dc08c 100644
+--- a/lib/ext2fs/getsize.c
++++ b/lib/ext2fs/getsize.c
+@@ -85,10 +85,11 @@ errcode_t ext2fs_get_device_size2(const char *file, int blocksize,
+ 	DWORD filesize;
+ #endif /* HAVE_GET_FILE_SIZE_EX */
+ 
+-	fd = ext2fs_open_file(file, O_RDONLY, 0);
+-	if (fd < 0)
+-		return errno;
+-	h = (HANDLE)_get_osfhandle(fd);
++	/* AFIF: open with full sharing so this also works while the image is already open by the io manager */
++	(void)fd;
++	h = CreateFileA(file, FILE_READ_ATTRIBUTES | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
++	if (h == INVALID_HANDLE_VALUE)
++		return EACCES;
+ 	if (DeviceIoControl(h, IOCTL_DISK_GET_PARTITION_INFO,
+ 			    &pi, sizeof(PARTITION_INFORMATION),
+ 			    &pi, sizeof(PARTITION_INFORMATION),
+@@ -119,7 +120,7 @@ errcode_t ext2fs_get_device_size2(const char *file, int blocksize,
+ 	}
+ #endif /* HAVE_GET_FILE_SIZE_EX */
+ 
+-	close(fd);
++	CloseHandle(h);
+ 	return 0;
+ }
+ 
+diff --git a/lib/ext2fs/windows_io.c b/lib/ext2fs/windows_io.c
+index 4bff074..fa53d81 100644
+--- a/lib/ext2fs/windows_io.c
++++ b/lib/ext2fs/windows_io.c
+@@ -569,7 +569,7 @@ static DWORD windows_open_device(struct windows_private_data *data, int open_fla
+ 		return -1;
+ 
+ 	DWORD desired_access = GENERIC_READ | ((open_flags & O_RDWR) ? GENERIC_WRITE : 0);
+-	DWORD share_mode = (open_flags & O_EXCL) ? 0 : FILE_SHARE_READ | ((open_flags & O_RDWR) ? FILE_SHARE_WRITE : 0);
++	DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE; /* AFIF: image files, allow size query while open */
+ 	DWORD flags_and_attributes =
+ #if defined(O_DIRECT)
+ 	(open_flags & O_DIRECT) ? (FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH) : FILE_ATTRIBUTE_NORMAL;
+diff --git a/resize/main.c b/resize/main.c
+index f914c05..6a20181 100644
+--- a/resize/main.c
++++ b/resize/main.c
+@@ -682,7 +682,9 @@ int main (int argc, char ** argv)
+ 	printf(_("The filesystem on %s is now %llu (%dk) blocks long.\n\n"),
+ 	       device_name, (unsigned long long) new_size, blocksize / 1024);
+ 
+-	if ((st_buf.st_size > new_file_size) &&
++	/* AFIF: never truncate when the filesystem sits at an offset inside a disk image;
++	 * the partition table and image size are handled by the caller. */
++	if (!io_options && (st_buf.st_size > new_file_size) &&
+ 	    (fd > 0)) {
+ #ifdef HAVE_FTRUNCATE64
+ 		retval = ftruncate64(fd, new_file_size);

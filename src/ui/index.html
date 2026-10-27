@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en" data-afif="classic">
+<head>
+<meta charset="utf-8">
+<title>AFIF ImgShrink</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header id="bar">
+  <div class="brand"><img src="logo.png" alt="AFIF-TECH"><div><b>AFIF <em>ImgShrink</em></b><small>AFIF-TECH</small></div></div>
+  <nav class="tabs" id="tabs"><button data-tab="shrink" class="on"><i class="ti shrink"></i>Shrink image</button><button data-tab="imager"><i class="ti sdi"></i>Disk Imager</button><button data-tab="usb"><i class="ti usb"></i>AS USB</button></nav>
+  <span class="sp"></span>
+  <button class="tb" id="themeBtn" title="Theme colours"><i class="dot"></i>Theme</button>
+  <button class="tb" id="aboutBtn" title="About">About</button>
+  <div class="drag"></div>
+</header>
+
+<main id="main">
+  <!-- left: the image -->
+  <section class="col left">
+    <div id="drop" class="card drop" tabindex="0">
+      <div class="sd3d" aria-hidden="true">
+        <div class="sd"><div class="sd-face"><div class="pins"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sd-label"><img src="logo.png" alt=""><b>AFIF</b><span>IMG</span></div></div></div>
+        <div class="shadow"></div>
+      </div>
+      <h2>Drop a disk image here</h2>
+      <p>Raspberry Pi OS, Ubuntu, DietPi, Home Assistant and other SD-card / USB images (<b>.img</b>).</p>
+      <button class="btn primary" id="pick">Choose image…</button>
+    </div>
+
+    <div id="imgCard" class="card hidden">
+      <div class="ih">
+        <div class="ficon">IMG</div>
+        <div class="fname"><b id="fName">—</b><small id="fPath">—</small></div>
+        <button class="btn ghost sm" id="change">Change</button>
+      </div>
+      <div class="pbar-wrap"><div id="pbar" class="pbar"></div><div class="pbar-legend" id="pLegend"></div></div>
+      <div class="stats">
+        <div class="stat"><small>Image size</small><b id="sSize">—</b></div>
+        <div class="stat"><small>Data in use</small><b id="sUsed">—</b></div>
+        <div class="stat accent"><small>Expected after shrinking</small><b id="sEst">—</b></div>
+        <div class="stat gold"><small>Expected saving</small><b id="sSave">—</b></div>
+      </div>
+      <table class="parts" id="parts"></table>
+      <p class="warn hidden" id="problem"></p>
+    </div>
+  </section>
+
+  <!-- right: options, run -->
+  <section class="col right">
+    <div class="card opts" id="opts">
+      <h3>Options</h3>
+      <div class="seg" id="outMode">
+        <button data-v="copy" class="on">Save as a new file</button>
+        <button data-v="inplace">Shrink the original</button>
+      </div>
+      <div class="outrow" id="outRow"><input id="outPath" spellcheck="false"><button class="btn sm" id="outPick">Browse…</button></div>
+      <p class="hint" id="outHint">The original image is not changed.</p>
+      <label class="sw"><input type="checkbox" id="optExpand" checked><i></i><span><b>Auto-expand on first boot</b><small>The root partition grows to fill the SD card the first time the device starts.</small></span></label>
+      <label class="sw"><input type="checkbox" id="optRepair" checked><i></i><span><b>Repair the filesystem if needed</b><small>Runs a full e2fsck repair when the quick check finds problems.</small></span></label>
+      <div class="row">
+        <label class="lbl">Compression</label>
+        <div class="seg sm" id="cmp"><button data-v="none" class="on">None</button><button data-v="zip">ZIP</button><button data-v="gzip">gzip</button><button data-v="xz">xz</button></div>
+      </div>
+      <div class="row" id="lvlRow" hidden><label class="lbl">Level</label><input type="range" id="lvl" min="1" max="9" value="6"><output id="lvlOut">6</output>
+        <label class="chk"><input type="checkbox" id="keepImg"> Keep the .img too</label></div>
+      <button class="go" id="start" disabled><span class="g-ic"></span><span>Shrink image</span></button>
+    </div>
+
+    <div class="card run hidden" id="run">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 200" class="gauge"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--k-accent)"/><stop offset="1" stop-color="var(--k-gold)"/></linearGradient></defs>
+          <circle cx="100" cy="100" r="84" class="g-bg"/><circle cx="100" cy="100" r="84" class="g-fg" id="gFg"/></svg>
+        <div class="g-txt"><b id="gPct">0%</b><small id="gStep">Starting…</small></div>
+      </div>
+      <ol class="steps" id="steps"></ol>
+      <div class="sub"><div class="subbar"><i id="subBar"></i></div><small id="subTxt"></small></div>
+      <div class="runbtns"><button class="btn danger sm" id="cancel">Cancel</button><button class="btn ghost sm" id="logBtn">Show log</button></div>
+    </div>
+
+    <div class="card done hidden" id="done">
+      <div class="trophy">✓</div>
+      <h3 id="dTitle">Image shrunk</h3>
+      <div class="cmp-bars">
+        <div class="cb"><small>Before</small><div class="cbar"><i id="bBefore"></i></div><b id="vBefore">—</b></div>
+        <div class="cb"><small>After</small><div class="cbar"><i id="bAfter" class="after"></i></div><b id="vAfter">—</b></div>
+      </div>
+      <p class="saving" id="dSave"></p>
+      <p class="hint" id="dFile"></p>
+      <div class="runbtns"><button class="btn primary" id="openFolder">Show in folder</button><button class="btn" id="toCard">Write to SD card…</button><button class="btn" id="again">Shrink another image</button><button class="btn ghost sm" id="logBtn2">Show log</button></div>
+    </div>
+  </section>
+</main>
+
+<main id="imager" class="hidden">
+  <section class="col left">
+    <div class="card">
+      <h3 class="ch"><span class="num">1</span>Image file</h3>
+      <div class="outrow"><input id="iFile" spellcheck="false" placeholder="Choose an image to write, or where to save a card image…"><button class="btn sm" id="iOpen" title="Choose an image to write">Open…</button><button class="btn sm" id="iSave" title="Choose where to save a card image">Save as…</button></div>
+      <p class="hint" id="iInfo">Accepts .img, and Raspberry Pi downloads as .zip, .xz or .gz, written directly without unpacking.</p>
+      <div class="hashbox">
+        <label class="lbl">Hash</label>
+        <div class="seg sm" id="hAlgo"><button data-v="md5">MD5</button><button data-v="sha1">SHA-1</button><button data-v="sha256" class="on">SHA-256</button></div>
+        <button class="btn sm" id="hGen">Generate</button>
+      </div>
+      <div class="hashout"><input id="hOut" readonly placeholder="Hash of the image file"><button class="btn ghost sm" id="hCopy">Copy</button></div>
+      <div class="hbar hidden" id="hBar"><i></i></div>
+    </div>
+
+    <div class="card">
+      <h3 class="ch"><span class="num">2</span>Device<span class="sp"></span>
+        <label class="chk"><input type="checkbox" id="showAll"> Show all disks</label>
+        <button class="btn ghost sm" id="dRefresh" title="Refresh">⟳ Refresh</button></h3>
+      <div class="warn hidden" id="adminBar"><b>Administrator rights are needed</b> to read or write SD cards and USB drives.<button class="btn primary sm" id="elevate">Restart as administrator</button></div>
+      <div id="devList" class="devlist"></div>
+      <p class="hint" id="devHint">Your Windows disk is never shown and can never be written.</p>
+    </div>
+  </section>
+
+  <section class="col right">
+    <div class="card" id="iOpts">
+      <h3>Actions</h3>
+      <label class="sw"><input type="checkbox" id="optAlloc"><i></i><span><b>Read only allocated partitions</b><small>When reading a card, stop after the last partition instead of copying the whole card. Much faster and smaller.</small></span></label>
+      <label class="sw"><input type="checkbox" id="optVerify" checked><i></i><span><b>Verify after writing</b><small>Reads the card back and compares it with the image, byte by byte.</small></span></label>
+      <div class="acts">
+        <button class="act" id="aRead"><span class="ai read"></span><b>Read</b><small>Card → image file</small></button>
+        <button class="act main" id="aWrite"><span class="ai write"></span><b>Write</b><small>Image file → card</small></button>
+        <button class="act" id="aVerify"><span class="ai verify"></span><b>Verify only</b><small>Compare card and image</small></button>
+      </div>
+      <p class="hint" id="actHint"></p>
+    </div>
+
+    <div class="card hidden" id="iRun">
+      <h3 id="rTitle">Writing…</h3>
+      <p class="hint" id="rSub"></p>
+      <div class="bigbar"><i id="rBar"></i><span id="rPct">0%</span></div>
+      <div class="rstats">
+        <div><small>Done</small><b id="rDone">—</b></div>
+        <div><small>Speed</small><b id="rSpeed">—</b></div>
+        <div><small>Time left</small><b id="rEta">—</b></div>
+      </div>
+      <div class="runbtns"><button class="btn danger sm" id="rCancel">Cancel</button><button class="btn ghost sm" id="rLog">Show log</button></div>
+    </div>
+
+    <div class="card done hidden" id="iDone">
+      <div class="trophy" id="iTrophy">✓</div>
+      <h3 id="iTitle">Done</h3>
+      <p class="saving" id="iSave2"></p>
+      <p class="hint" id="iDetail"></p>
+      <div class="runbtns"><button class="btn primary" id="iShrink">Shrink this image</button><button class="btn" id="iFolder">Show in folder</button><button class="btn" id="iBack">Done</button><button class="btn ghost sm" id="iLog">Show log</button></div>
+    </div>
+  </section>
+</main>
+
+<main id="usb" class="hidden">
+  <section class="col left">
+    <div class="card">
+      <h3 class="ch"><span class="num">1</span>AS USB Writer</h3>
+      <p class="hint">Write an ISO or disk image to a USB stick or SD card to make a bootable drive: Windows setup media, Linux installers, UEFI and ARM images.</p>
+      <p class="hint">AS USB opens as its own window and asks for administrator rights, because it writes directly to the disk.</p>
+      <div class="acts">
+        <button class="act main" id="usbOpen"><span class="ai write"></span><b>Open AS USB Writer</b><small>Launch the bootable USB tool</small></button>
+      </div>
+      <p class="hint" id="usbHint">Tip: shrunk images from the Shrink tab can be written straight to a card from the Disk Imager tab.</p>
+    </div>
+  </section>
+  <section class="col right">
+    <div class="card">
+      <h3>Features</h3>
+      <ul class="usbfeat">
+        <li>Bootable USB from Windows, Linux, UEFI and ARM images</li>
+        <li>ISO to USB for Windows 10 and 11 setup media</li>
+        <li>Partition scheme MBR or GPT, target system BIOS or UEFI</li>
+        <li>FAT32, NTFS, exFAT and UDF, chosen automatically from the image</li>
+        <li>Bad-block check, checksum verification and persistence support</li>
+        <li>Windows To Go, and downloadable official Windows images</li>
+      </ul>
+      <p class="usbnote">AS USB is part of AFIF ImgShrink. Its writing engine is built on Rufus 4.15 (GPLv3, © Akeo Consulting / Pete Batard) and is shipped unmodified except for its name and icon. Full source is included with the installer.</p>
+    </div>
+  </section>
+</main>
+
+<section id="log" class="hidden"><header><b>Log</b><span class="sp"></span><button class="btn ghost sm" id="logCopy">Copy</button><button class="btn ghost sm" id="logClose">Close</button></header><pre id="logPre"></pre></section>
+<footer id="foot"><span>© AFIF-TECH · Afif Khoury · ImgShrink &amp; Disk Imager</span><span class="sp"></span><span id="footR">Filesystem tools: e2fsprogs (GPL-2.0) · xz (0BSD)</span></footer>
+<div id="dropShade"><div>Drop the image to load it</div></div>
+<div id="toast"></div>
+<script src="imager.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
