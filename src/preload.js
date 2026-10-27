@@ -27,7 +27,6 @@ contextBridge.exposeInMainWorld("shrink", {
   hash: (f, a) => ipcRenderer.invoke("hash", f, a),
   hashCancel: () => ipcRenderer.invoke("hash-cancel"),
   relaunchAdmin: () => ipcRenderer.invoke("relaunch-admin"),
-  launchUsb: () => ipcRenderer.invoke("launch-usb"),
   onDiskProgress: on("disk-progress"), onHashProgress: on("hash-progress"),
   pathForFile: (f) => { try { return webUtils.getPathForFile(f); } catch { return null; } },
   onLog: on("job-log"), onStep: on("job-step"), onProgress: on("job-progress"), onOpenFile: on("open-file"),

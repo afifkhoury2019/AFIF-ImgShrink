@@ -92,18 +92,3 @@ ipcMain.handle("relaunch-admin", async () => {
   app.requestSingleInstanceLock();
   return { ok: false, error: "Administrator rights were not granted." };
 });
-
-// ---------------------------------------------------------------- AS USB
-// Launches the bundled AS USB Writer (bootable USB tool). It declares
-// requireAdministrator, so it is started with RunAs: no prompt when AFIF
-// ImgShrink is already elevated, one UAC prompt otherwise.
-ipcMain.handle("launch-usb", async () => {
-  const exe = app.isPackaged ? path.join(process.resourcesPath, "bin", "AS-USB.exe") : path.join(__dirname, "..", "bin", "AS-USB.exe");
-  if (!fs.existsSync(exe)) return { ok: false, error: "AS USB Writer was not found next to AFIF ImgShrink. Reinstall the app." };
-  const q = (s) => "'" + String(s).replace(/'/g, "''") + "'";
-  const code = await new Promise((res) => {
-    const p = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-Command", `Start-Process -FilePath ${q(exe)} -Verb RunAs`], { windowsHide: true, stdio: "ignore" });
-    p.on("close", res); p.on("error", () => res(1));
-  });
-  return code === 0 ? { ok: true } : { ok: false, error: "Administrator rights were not granted, so AS USB Writer did not start." };
-});
