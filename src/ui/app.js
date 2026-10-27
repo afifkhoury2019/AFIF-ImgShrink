@@ -144,12 +144,6 @@
   }
   $("#openFolder").onclick = () => st.result && S.showItem(st.result.output);
   $("#toCard").onclick = () => st.result && window.AFIF.toCard(st.result.output);
-  const usbBtn = $("#usbOpen");
-  if (usbBtn) usbBtn.onclick = async () => {
-    usbBtn.disabled = true;
-    try { const r = await S.launchUsb(); if (!r || !r.ok) toast(r?.error || "AS USB Writer could not be started.", true); }
-    finally { setTimeout(() => { usbBtn.disabled = false; }, 800); }
-  };
   $("#again").onclick = () => { st.info = null; st.result = null; $("#outPath").value = ""; render(); };
   const showLog = () => $("#log").classList.remove("hidden");
   $("#logBtn").onclick = showLog; $("#logBtn2").onclick = showLog; $("#logClose").onclick = () => $("#log").classList.add("hidden");
